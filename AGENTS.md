@@ -4,7 +4,7 @@
 ## Project Identity
 - **Name**: RIC Badminton — Match Queue Board
 - **Owner**: kyaw-hein222
-- **Repo**: https://github.com/kyaw-hein222/ric-badminton.git
+- **Repo**: https://github.com/kyaw-hein222/RIC-badminton.git
 - **Description**: A real-time badminton court match queue system for RIC (club). Public scoreboard + admin panel + historical records.
 
 ## Folder Structure
@@ -78,7 +78,7 @@ When deploying, these values must be set:
 ```
 user.name: kyaw-hein222
 user.email: kyawhtethein.pt@gmail.com
-remote origin: https://github.com/kyaw-hein222/ric-badminton.git
+remote origin: https://github.com/kyaw-hein222/RIC-badminton.git
 branch: main
 ```
 
