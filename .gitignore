@@ -1,0 +1,27 @@
+# OS generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor / IDE folders
+.vscode/
+.idea/
+
+# Agent-specific config (use AGENTS.md instead)
+.claude/
+.codex/
+.cursor/
+
+# Python cache (no Python in this project)
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Node modules (not used — Lambda uses built-in AWS SDK)
+node_modules/
+
+# Build artifacts
+*.zip
+
+# Logs
+*.log

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Club Records & Match History - RIC_Badminton</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+      --primary: #0f111a;      /* Warm deep navy bg — dark but not black-hole */
+      --secondary: #1a1d2e;    /* Rich elevated surface */
+      --accent: #ff6b6b;       /* Warm coral — vibrant, sporty, easy on eyes */
+      --accent-glow: rgba(255, 107, 107, 0.3);
+      --success: #2ecc71;      /* Vibrant green */
+      --success-glow: rgba(46, 204, 113, 0.2);
+      --neon-blue: #4ecdc4;    /* Fresh teal — crisp but not harsh */
+      --neon-blue-glow: rgba(78, 205, 196, 0.25);
+      --white: #ffffff;
+      --text-main: #f0f0f5;    /* Soft warm white */
+      --text-muted: #8e8ea0;   /* Warmer muted gray */
+      --border: rgba(255, 255, 255, 0.06); /* Subtle glass border */
+      --shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.8);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: "Outfit", "Inter", sans-serif;
+      background: var(--primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(78, 205, 196, 0.06) 0%, rgba(255, 107, 107, 0.04) 50%, transparent 100%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* HEADER */
+    header {
+      background: rgba(26, 29, 46, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+    }
+    
+    .header-left:hover {
+      transform: translateY(-1px);
+    }
+    
+    .header-logo {
+      filter: drop-shadow(0 0 6px var(--accent-glow));
+      transition: filter 0.3s ease, transform 0.3s ease;
+    }
+
+    .header-left:hover .header-logo {
+      filter: drop-shadow(0 0 10px var(--neon-blue-glow));
+      transform: rotate(10deg);
+    }
+    
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, var(--white) 30%, #a0a0b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transition: all 0.25s ease;
+    }
+
+    .header-left:hover h1 {
+      background: linear-gradient(135deg, var(--neon-blue) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    header a.back-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      text-decoration: none;
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    header a.back-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
+    }
+
+    /* MAIN CONTENT */
+    main {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 16px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      flex: 1;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+    }
+
+    /* COLUMNS */
+    .column-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      color: var(--text-main);
+    }
+
+    /* SEARCH BAR */
+    .search-box {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      background: rgba(15, 17, 26, 0.6);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-family: "Outfit", sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 10px rgba(78, 205, 196, 0.15);
+    }
+
+    .search-box::before {
+      content: '🔍';
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      opacity: 0.5;
+    }
+
+    /* AVATARS */
+    .avatar {
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    
+    .avatar-initials {
+      border-radius: 50%;
+      color: #fff;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+    
+    .avatar.sm, .avatar-initials.sm {
+      width: 32px; height: 32px;
+      font-size: 0.8rem;
+    }
+    
+    .avatar.md, .avatar-initials.md {
+      width: 40px; height: 40px;
+      font-size: 1rem;
+    }
+
+    /* LEADERBOARD TABLE */
+    .leaderboard-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 550px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .leaderboard-row {
+      display: flex;
+      align-items: center;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+
+    .leaderboard-row:hover {
+      transform: translateX(2px);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .rank-num {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      min-width: 25px;
+    }
+
+    .leaderboard-row:nth-child(1) .rank-num { color: #ffd700; font-size: 1.1rem; } /* Gold */
+    .leaderboard-row:nth-child(2) .rank-num { color: #c0c0c0; font-size: 1.05rem; } /* Silver */
+    .leaderboard-row:nth-child(3) .rank-num { color: #cd7f32; font-size: 1rem; } /* Bronze */
+
+    .player-name {
+      flex: 1;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .shuttle-badge {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(78, 205, 196, 0.06);
+      color: #38bdf8;
+      border: 1px solid rgba(78, 205, 196, 0.12);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
+
+    .stat-none {
+      color: var(--text-muted);
+      font-style: italic;
+      font-size: 0.78rem;
+    }
+
+    /* MATCH HISTORY LIST */
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 600px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .history-card {
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .history-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: rgba(255, 107, 107, 0.3);
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .history-court {
+      color: var(--neon-blue);
+      background: rgba(78, 205, 196, 0.08);
+      padding: 3px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(78, 205, 196, 0.15);
+    }
+
+    .history-date {
+      color: var(--text-muted);
+    }
+
+    .history-players {
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: #e2e8f0;
+    }
+
+    .team-block {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .vs {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      background: rgba(0,0,0,0.15);
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    .history-completed-time {
+      margin-top: 8px;
+      font-size: 0.68rem;
+      color: var(--success);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .history-completed-time::before {
+      content: '✓';
+      font-weight: 900;
+    }
+
+    .empty-list {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border: 1px dashed rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="header-left">
+    <!-- Sleek premium RIC_Badminton SVG Logo -->
+    <svg width="36" height="36" viewBox="0 0 100 100" class="header-logo" style="display: block;">
+      <defs>
+        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#4ecdc4" />
+          <stop offset="100%" stop-color="#ff6b6b" />
+        </linearGradient>
+      </defs>
+      <!-- Outer glow circle ring -->
+      <circle cx="50" cy="50" r="45" fill="none" stroke="url(#logoGrad)" stroke-width="5" />
+      
+      <!-- Detailed Premium Feather Shuttlecock -->
+      <g stroke="url(#logoGrad)" stroke-width="2.5" fill="none" stroke-linejoin="round" stroke-linecap="round">
+        <!-- Cork base -->
+        <path d="M40 54 C40 66, 60 66, 60 54 Z" fill="url(#logoGrad)" opacity="0.8" />
+        <path d="M40 54 Q50 57 60 54" stroke="#ffffff" stroke-width="1.5" />
+        
+        <!-- Scalloped Feather Tips -->
+        <path d="M30 25 C32 20, 38 20, 38 25" />
+        <path d="M38 25 C40 20, 46 20, 46 25" />
+        <path d="M46 25 C48 20, 54 20, 54 25" />
+        <path d="M54 25 C56 20, 62 20, 62 25" />
+        <path d="M62 25 C64 20, 70 20, 70 25" />
+        
+        <!-- Outer Edges -->
+        <path d="M30 25 L40 54" />
+        <path d="M70 25 L60 54" />
+        
+        <!-- Feather shafts (radiating shafts) -->
+        <line x1="38" y1="25" x2="44" y2="54" />
+        <line x1="46" y1="25" x2="48" y2="54" />
+        <line x1="54" y1="25" x2="52" y2="54" />
+        <line x1="62" y1="25" x2="56" y2="54" />
+        
+        <!-- Two sewing threads binding the feathers -->
+        <path d="M34 36 Q50 40 66 36" stroke-width="2" />
+        <path d="M37 45 Q50 48 63 45" stroke-width="2" />
+      </g>
+      
+      <!-- Bold "RIC" Text in center-bottom -->
+      <text x="50" y="86" font-family="'Outfit', sans-serif" font-weight="900" font-size="18" fill="#ffffff" text-anchor="middle" letter-spacing="1.5">RIC</text>
+    </svg>
+    <h1>RIC_Badminton Records</h1>
+  </a>
+  <a href="index.html" class="back-btn">🏸 Back to Board</a>
+</header>
+
+<main>
+
+  <!-- CLUB LEADERBOARD -->
+  <div>
+    <div class="column-title">🏆 Club Roster & Leaderboard</div>
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Search club members..." oninput="filterLeaderboard()" autocomplete="off" />
+    </div>
+    <div id="leaderboard" class="leaderboard-list"></div>
+  </div>
+
+  <!-- COMPLETED MATCH TIMELINE -->
+  <div>
+    <div class="column-title">📋 Completed Matches History</div>
+    <div class="search-box">
+      <input type="text" id="history-search-input" placeholder="Search matches by player name or court..." oninput="filterHistory()" autocomplete="off" />
+    </div>
+    <div id="history" class="history-list"></div>
+  </div>
+
+</main>
+
+<script>
+const CLUB_KEY = "badmin_club_players";
+const HISTORY_KEY = "badmin_match_history";
+const API_URL = ""; // Paste API Gateway invoke URL after backend deployment.
+const CLOUD_KEYS = [CLUB_KEY, HISTORY_KEY];
+let cloudState = null;
+
+function apiStateEndpoint() {
+  return API_URL ? `${API_URL.replace(/\/$/, "")}/state` : "";
+}
+
+function readLocalState() {
+  return {
+    [CLUB_KEY]: JSON.parse(localStorage.getItem(CLUB_KEY) || "[]"),
+    [HISTORY_KEY]: JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]")
+  };
+}
+
+async function loadCloudState() {
+  const endpoint = apiStateEndpoint();
+  if (!endpoint) {
+    cloudState = readLocalState();
+    return;
+  }
+
+  try {
+    const res = await fetch(endpoint);
+    if (!res.ok) throw new Error(`API returned ${res.status}`);
+    const data = await res.json();
+    cloudState = Object.fromEntries(CLOUD_KEYS.map(key => [key, Array.isArray(data[key]) ? data[key] : []]));
+    CLOUD_KEYS.forEach(key => localStorage.setItem(key, JSON.stringify(cloudState[key])));
+  } catch (err) {
+    console.error("Failed to load AWS state; using local backup.", err);
+    cloudState = readLocalState();
+  }
+}
+
+function getStateArray(key) {
+  if (!cloudState) cloudState = readLocalState();
+  return cloudState[key] || [];
+}
+
+function loadClub() {
+  const c = getStateArray(CLUB_KEY);
+  return c.map(x => ({ ...x, matchesPlayed: x.matchesPlayed ?? 0 }));
+}
+
+function loadHistory() {
+  return getStateArray(HISTORY_KEY);
+}
+
+// Generate Player Avatar HTML
+function getPlayerAvatarHtml(p, sizeClass = "sm") {
+  if (p.avatar) {
+    return `<img src="${p.avatar}" class="avatar ${sizeClass}" alt="${p.name}" />`;
+  }
+  const initials = p.name ? p.name.charAt(0).toUpperCase() : "?";
+  let hash = 0;
+  for (let i = 0; i < p.name.length; i++) {
+    hash = p.name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = Math.abs(hash % 360);
+  const gradient = `linear-gradient(135deg, hsl(${hue}, 80%, 55%) 0%, hsl(${(hue + 45) % 360}, 80%, 40%) 100%)`;
+  return `<div class="avatar-initials ${sizeClass}" style="background: ${gradient};">${initials}</div>`;
+}
+
+// Generate Player Rank Badge HTML
+function getRankBadgeHtml(rank) {
+  const r = (rank || "B").toUpperCase();
+  let gradient = "";
+  let textColor = "#ffffff";
+  switch (r) {
+    case "S":
+      gradient = "linear-gradient(135deg, #ff4d4d, #b30000)";
+      break;
+    case "A":
+      gradient = "linear-gradient(135deg, #ffb300, #ff8000)";
+      break;
+    case "B":
+      gradient = "linear-gradient(135deg, #00d2ff, #0066ff)";
+      break;
+    case "C":
+      gradient = "linear-gradient(135deg, #00ff87, #00b359)";
+      textColor = "#0f111a";
+      break;
+    case "D":
+      gradient = "linear-gradient(135deg, #d946ef, #8b5cf6)";
+      break;
+    default:
+      gradient = "linear-gradient(135deg, #a0a0b8, #8e8ea0)";
+  }
+  return `<span class="rank-badge" style="background: ${gradient}; color: ${textColor}; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; margin-left: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); vertical-align: middle;">${r}</span>`;
+}
+
+function renderLeaderboard() {
+  const rankValues = { 'S': 5, 'A': 4, 'B': 3, 'C': 2, 'D': 1 };
+  const club = loadClub().sort((a, b) => {
+    const rankA = rankValues[(a.rank || "B").toUpperCase()] || 0;
+    const rankB = rankValues[(b.rank || "B").toUpperCase()] || 0;
+    if (rankB !== rankA) {
+      return rankB - rankA;
+    }
+    // Secondary: sort by matches played descending
+    if (b.matchesPlayed !== a.matchesPlayed) {
+      return b.matchesPlayed - a.matchesPlayed;
+    }
+    // Tertiary: sort alphabetically
+    return a.name.localeCompare(b.name);
+  });
+  const el = document.getElementById("leaderboard");
+
+  if (club.length === 0) {
+    el.innerHTML = '<div class="empty-list">No club members registered in the database.</div>';
+    return;
+  }
+
+  el.innerHTML = club.map((p, i) => `
+    <div class="leaderboard-row" data-name="${p.name.toLowerCase()}">
+      <span class="rank-num">#${i + 1}</span>
+      <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+        ${getPlayerAvatarHtml(p, "md")}
+        <span class="player-name">${p.name}${getRankBadgeHtml(p.rank)}</span>
+      </div>
+      <span class="player-count">
+        ${p.matchesPlayed === 0 
+          ? `<span class="stat-none">No matches played</span>` 
+          : `<span class="shuttle-badge">🏸 ${p.matchesPlayed} games played</span>`
+        }
+      </span>
+    </div>`).join("");
+}
+
+function renderHistory() {
+  const history = loadHistory().reverse(); // Show latest matches first!
+  const el = document.getElementById("history");
+
+  if (history.length === 0) {
+    el.innerHTML = '<div class="empty-list">No completed matches recorded yet.</div>';
+    return;
+  }
+
+  el.innerHTML = history.map(h => `
+    <div class="history-card">
+      <div class="history-header">
+        <span class="history-court">${h.court}</span>
+        <span class="history-date">${h.date}</span>
+      </div>
+      <div class="history-players">
+        <span class="team-block">${h.team1a} / ${h.team1b}</span>
+        <span class="vs">VS</span>
+        <span class="team-block">${h.team2a} / ${h.team2b}</span>
+      </div>
+      <div class="history-completed-time">Completed at ${h.completedAt}</div>
+    </div>`).join("");
+}
+
+function filterLeaderboard() {
+  const query = document.getElementById("search-input").value.trim().toLowerCase();
+  const rows = document.querySelectorAll(".leaderboard-row");
+
+  rows.forEach(row => {
+    const name = row.dataset.name;
+    if (name.includes(query)) {
+      row.style.display = "flex";
+    } else {
+      row.style.display = "none";
+    }
+  });
+}
+
+function filterHistory() {
+  const query = document.getElementById("history-search-input").value.trim().toLowerCase();
+  const cards = document.querySelectorAll(".history-card");
+
+  cards.forEach(card => {
+    const court = card.querySelector(".history-court").textContent.toLowerCase();
+    const players = [...card.querySelectorAll(".team-block")].map(t => t.textContent.toLowerCase()).join(" ");
+    
+    if (court.includes(query) || players.includes(query)) {
+      card.style.display = "block";
+    } else {
+      card.style.display = "none";
+    }
+  });
+}
+
+// Initial render only - no auto refresh interval, fully manual.
+(async function init() {
+  await loadCloudState();
+  renderLeaderboard();
+  renderHistory();
+})();
+</script>
+</body>
+</html>
