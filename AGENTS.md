@@ -99,4 +99,8 @@ branch: main
 - **DO NOT** create a `.claude/`, `.codex/`, or similar agent-specific config folder. Use this `AGENTS.md` as the single source of truth.
 - **DO NOT** install npm/node dependencies at the project root. The frontend is vanilla. The backend Lambda uses AWS SDK v3 which is pre-installed in the Lambda runtime.
 - **Before modifying HTML files**, check `API_URL` — if it's empty, the app is in local-only mode.
-- **When deploying**, follow `docs/aws_deployment_guide.pdf` or the deployment checklist above.
+- **DO NOT** run automated AWS CLI scripts/commands directly to deploy things. The user is studying AWS and wants to do it manually to learn.
+- **AWS Study & Deployment Roadmap**:
+  1. **Console First (Current Phase)**: Explain step-by-step how to configure and deploy resources using the AWS Web Console.
+  2. **CLI Second**: Transition to scripting the deployment using the AWS CLI.
+  3. **IaC Third**: Automate the infrastructure using Infrastructure as Code (like CloudFormation or Terraform).
