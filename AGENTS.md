@@ -60,19 +60,43 @@ Writes a single key. Requires header `X-Admin-Passcode`.
 CORS preflight. Returns `200` with CORS headers.
 
 ## Deployment Status
-- [ ] DynamoDB table `ric_badminton_state` created
-- [ ] Lambda function deployed with `ADMIN_PASSCODE` env var
-- [ ] API Gateway HTTP API created with routes
-- [ ] S3 bucket created and frontend files uploaded
-- [ ] CloudFront distribution created with OAC
-- [ ] `API_URL` set in all 3 HTML files
-- [ ] GitHub repo updated with new structure
+- [x] DynamoDB table `ric_badminton_state` created
+- [x] Lambda function deployed with `ADMIN_PASSCODE` env var
+- [x] API Gateway HTTP API created with routes
+- [x] S3 bucket created and frontend files uploaded
+- [x] CloudFront distribution created with OAC
+- [x] `API_URL` set in all 3 HTML files
+- [x] GitHub repo updated with new structure
 
 ## Configuration Points
 When deploying, these values must be set:
 1. **`API_URL`** in `frontend/index.html` (line ~611), `frontend/admin.html` (line ~926), `frontend/records.html` (line ~465) — set to the API Gateway invoke URL
 2. **`ADMIN_PASSCODE`** as a Lambda environment variable — the admin panel sends this via `X-Admin-Passcode` header
-3. **`TABLE_NAME`** in `backend/lambda_function.js` (line 7) — currently `ric_badminton_state`
+3. **`TABLE_NAME`** in `backend/lambda_function.mjs` (line 10) — currently `ric_badminton_state`
+4. **`S3_BUCKET_NAME`** (UPPERCASE) as a Lambda environment variable (must be uppercase in code: `process.env.S3_BUCKET_NAME`, check AWS Console env configuration to match case).
+
+## Deployed Resources (AWS Console)
+- **Region:** Sydney (`ap-southeast-2`)
+- **DynamoDB Table:** `ric_badminton_state` (Partition key: `key`)
+- **IAM execution role:** `ric-badminton-lambda-role` (with DynamoDB & S3 Put/Delete permissions)
+- **Lambda Function:** `ric-badminton-backend` (Node.js 24, architecture: arm64)
+  - Code: `lambda_function.mjs` (ES Module, handler: `lambda_function.handler`)
+- **API Gateway HTTP API:** `ric-badminton-api`
+  - Invoke URL: `https://ku8xwdi7sd.execute-api.ap-southeast-2.amazonaws.com`
+- **S3 Bucket:** `ric-badminton` (private, stores static files & avatars/)
+- **CloudFront Distribution:** `E26LI7EAJOB2B7`
+  - Origin Access Control (OAC) enabled
+  - Default root object: `index.html`
+
+## Recent Debugging & Lessons Learned
+1. **Node.js ESM vs. CommonJS in Lambda**:
+   - Lambda treats `.js` as CommonJS by default. Since we use `import`, the file extension must be `.mjs` (renamed to `lambda_function.mjs`).
+   - The Handler setting must match this file extension: `lambda_function.handler`.
+2. **API Gateway vs. Lambda CORS**:
+   - If API Gateway has CORS configured at the Gateway level, it strips/overwrites CORS headers returned by Lambda.
+   - If CORS is configured at the Gateway level, it **MUST** include `"AllowOrigins": ["*"]` (or a specific domain). If it is missing, AWS strips CORS headers entirely, causing the browser to block fetch requests.
+3. **Case-Sensitivity of Environment Variables**:
+   - Environment variables are case-sensitive. The bucket name variable in code is `S3_BUCKET_NAME` (UPPERCASE), so ensure the Lambda environment configuration uses UPPERCASE instead of lowercase `s3_bucket_name`.
 
 ## Git Config
 ```
@@ -104,3 +128,10 @@ branch: main
   1. **Console First (Current Phase)**: Explain step-by-step how to configure and deploy resources using the AWS Web Console.
   2. **CLI Second**: Transition to scripting the deployment using the AWS CLI.
   3. **IaC Third**: Automate the infrastructure using Infrastructure as Code (like CloudFormation or Terraform).
+
+## Future Tasks: Resume & Portfolio Strategy
+Once AWS deployment is finished, the user plans to:
+1. **Resume & Portfolio HTML Hub**: Create a static portfolio site of their resume in a new directory, deploy it on S3, and configure it under CloudFront.
+2. **Clickable Link Layout**: Use the clean hyperlink structure `[Live Demo]` / `[GitHub]` to link to this project and others.
+3. **Bullet Point Templates**: Update their official PDF resume using the high-impact AWS architectural bullet points formulated during this session.
+4. **Architectural Diagrams**: Create block diagrams showing the service integrations (S3 -> CloudFront OAC -> API Gateway -> Lambda -> DynamoDB) and display them on their GitHub README and portfolio website instead of the resume.
