@@ -25,3 +25,12 @@ node_modules/
 
 # Logs
 *.log
+
+# Terraform (configuration files are tracked; generated state and local data are not)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+crash.*.log
